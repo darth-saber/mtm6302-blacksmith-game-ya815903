@@ -1,24 +1,30 @@
+// Game State
 let gold = 10;
 let ore = 0;
 let wood = 0;
 let fireBurning = false;
 let weapons = [];
 
+// DOM Elements
 const logDiv = document.getElementById("log");
 const fireAnim = document.getElementById("fireAnim");
 const inventoryItems = document.getElementById("inventoryItems");
 
+// Prices & Recipes
 const BUY_PRICES = { ore: 3, wood: 1 };
 const MAKE_RECIPES = { sword: { ore: 2, wood: 1 }, axe: { ore: 1, wood: 2 } };
 const SELL_PRICES = { sword: [5, 10], axe: [4, 8] };
 
+// Interval for sparks
 let sparkInterval = null;
 
+// Logging
 function log(message) {
   logDiv.innerHTML += message + "<br>";
   logDiv.scrollTop = logDiv.scrollHeight;
 }
 
+// Inventory Display
 function updateInventory() {
   let html = `<p>Gold: ${gold} | Ore: ${ore} | Wood: ${wood} | Fire: ${fireBurning ? "🔥" : "❌"}</p>`;
   html += weapons.length
@@ -27,7 +33,9 @@ function updateInventory() {
   inventoryItems.innerHTML = html;
 }
 
+// Sparks
 function spawnSparks() {
+  if (!fireBurning) return;
   for (let i = 0; i < 5; i++) {
     const spark = document.createElement("div");
     spark.className = "spark";
@@ -38,19 +46,16 @@ function spawnSparks() {
   }
 }
 
+// Game Actions
 function buy(item) {
   if (fireBurning) {
     log("Cannot buy while fire is burning!");
     return;
   }
-  if (!BUY_PRICES[item]) {
-    log("Invalid item to buy!");
-    return;
-  }
+  if (!BUY_PRICES[item]) return log("Invalid item!");
   if (gold >= BUY_PRICES[item]) {
     gold -= BUY_PRICES[item];
-    if (item === "ore") ore++;
-    else if (item === "wood") wood++;
+    item === "ore" ? ore++ : wood++;
     log(`Bought 1 ${item}.`);
   } else log("Not enough gold!");
   updateInventory();
@@ -80,10 +85,7 @@ function make(item) {
     log("Fire must be burning to make weapons!");
     return;
   }
-  if (!MAKE_RECIPES[item]) {
-    log("Invalid weapon!");
-    return;
-  }
+  if (!MAKE_RECIPES[item]) return log("Invalid weapon!");
   const recipe = MAKE_RECIPES[item];
   if (ore >= recipe.ore && wood >= recipe.wood) {
     ore -= recipe.ore;
@@ -124,6 +126,18 @@ Show Inventory
 Help`);
 }
 
-// Initialize
-log("Welcome to Blacksmith! Use the buttons to play.");
-updateInventory();
+// Bind buttons after DOM load
+window.onload = () => {
+  document.getElementById("buyOre").onclick = () => buy("ore");
+  document.getElementById("buyWood").onclick = () => buy("wood");
+  document.getElementById("toggleFire").onclick = fireToggle;
+  document.getElementById("makeSword").onclick = () => make("sword");
+  document.getElementById("makeAxe").onclick = () => make("axe");
+  document.getElementById("sellSword").onclick = () => sell("sword");
+  document.getElementById("sellAxe").onclick = () => sell("axe");
+  document.getElementById("showInv").onclick = showInventory;
+  document.getElementById("showHelp").onclick = showHelp;
+
+  log("Welcome to Blacksmith! Use the buttons to play.");
+  updateInventory();
+};
