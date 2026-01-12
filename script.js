@@ -1,10 +1,8 @@
-// Blacksmith game logic (fixed syntax errors)
 let gold = 10,
   ore = 0,
   wood = 0,
   fireBurning = false,
   weapons = [];
-
 const logDiv = document.getElementById("log");
 const fireAnim = document.getElementById("fireAnim");
 const inventoryItems = document.getElementById("inventoryItems");
@@ -16,9 +14,7 @@ function log(message) {
 }
 
 function updateInventory() {
-  let html = `<p>Gold: ${gold} | Ore: ${ore} | Wood: ${wood} | Fire: ${
-    fireBurning ? "🔥" : "❌"
-  }</p>`;
+  let html = `<p>Gold: ${gold} | Ore: ${ore} | Wood: ${wood} | Fire: ${fireBurning ? "🔥" : "❌"}</p>`;
   html += weapons.length
     ? weapons.map((w) => `<span class="weapon ${w}">${w}</span>`).join(" ")
     : "No weapons";
@@ -47,13 +43,11 @@ function buy(item) {
     gold -= price;
     item === "ore" ? ore++ : wood++;
     log(`Bought 1 ${item}.`);
-  } else {
-    log("Not enough gold!");
-  }
+  } else log("Not enough gold!");
   updateInventory();
 }
 
-function toggleFire() {
+function fireToggle() {
   if (fireBurning) {
     fireBurning = false;
     fireAnim.style.display = "none";
@@ -67,9 +61,7 @@ function toggleFire() {
       fireAnim.style.display = "block";
       log("Fire started.");
       if (!sparkInterval) sparkInterval = setInterval(spawnSparks, 300);
-    } else {
-      log("Not enough wood to start fire!");
-    }
+    } else log("Not enough wood to start fire!");
   }
   updateInventory();
 }
@@ -86,9 +78,7 @@ function make(item) {
     weapons.push(item);
     log(`Made 1 ${item}`);
     spawnSparks();
-  } else {
-    log("Not enough resources!");
-  }
+  } else log("Not enough resources!");
   updateInventory();
 }
 
@@ -100,15 +90,14 @@ function sell(item) {
   const idx = weapons.indexOf(item);
   if (idx >= 0) {
     weapons.splice(idx, 1);
-    const rangeMin = item === "sword" ? 5 : 4;
-    const rangeMax = item === "sword" ? 10 : 8;
     const earned =
-      Math.floor(Math.random() * (rangeMax - rangeMin + 1)) + rangeMin;
+      Math.floor(
+        Math.random() *
+          ((item === "sword" ? 10 : 8) - (item === "sword" ? 5 : 4) + 1),
+      ) + (item === "sword" ? 5 : 4);
     gold += earned;
     log(`Sold 1 ${item} for ${earned} gold.`);
-  } else {
-    log(`No ${item} to sell!`);
-  }
+  } else log(`No ${item} to sell!`);
   updateInventory();
 }
 
@@ -123,16 +112,15 @@ function showHelp() {
 }
 
 // Bind buttons
-const el = (id) => document.getElementById(id);
-if (el("buyOre")) el("buyOre").onclick = () => buy("ore");
-if (el("buyWood")) el("buyWood").onclick = () => buy("wood");
-if (el("toggleFire")) el("toggleFire").onclick = () => toggleFire();
-if (el("makeSword")) el("makeSword").onclick = () => make("sword");
-if (el("makeAxe")) el("makeAxe").onclick = () => make("axe");
-if (el("sellSword")) el("sellSword").onclick = () => sell("sword");
-if (el("sellAxe")) el("sellAxe").onclick = () => sell("axe");
-if (el("showInv")) el("showInv").onclick = () => showInventory();
-if (el("showHelp")) el("showHelp").onclick = () => showHelp();
+document.getElementById("buyOre").onclick = () => buy("ore");
+document.getElementById("buyWood").onclick = () => buy("wood");
+document.getElementById("toggleFire").onclick = () => fireToggle();
+document.getElementById("makeSword").onclick = () => make("sword");
+document.getElementById("makeAxe").onclick = () => make("axe");
+document.getElementById("sellSword").onclick = () => sell("sword");
+document.getElementById("sellAxe").onclick = () => sell("axe");
+document.getElementById("showInv").onclick = () => showInventory();
+document.getElementById("showHelp").onclick = () => showHelp();
 
 log("Welcome to Blacksmith! Use the buttons to play.");
 updateInventory();
