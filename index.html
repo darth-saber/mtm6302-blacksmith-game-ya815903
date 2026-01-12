@@ -1,16 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Blacksmith Game</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <h1>Blacksmith</h1>
+        <div class="fire" id="fireAnim"></div>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Blacksmith</title>
-</head>
+        <div id="log"></div>
 
-<body>
-  <h1>Blacksmith</h1>
-  <p>Blacksmith is a simple text-based game.</p>
-  <script src="blacksmith.js"></script>
-</body>
+        <div class="buttons">
+            <button onclick="buy('ore')">Buy Ore (3 Gold)</button>
+            <button onclick="buy('wood')">Buy Wood (1 Gold)</button>
+            <button onclick="fireToggle()">Toggle Fire</button>
+        </div>
+
+        <div class="buttons">
+            <button onclick="make('sword')">Make Sword (2 Ore, 1 Wood)</button>
+            <button onclick="make('axe')">Make Axe (1 Ore, 2 Wood)</button>
+        </div>
+
+        <div class="buttons">
+            <button onclick="sell('sword')">Sell Sword (5-10 Gold)</button>
+            <button onclick="sell('axe')">Sell Axe (4-8 Gold)</button>
+        </div>
+
+        <div class="buttons">
+            <button onclick="showInventory()">Inventory</button>
+            <button onclick="showHelp()">Help</button>
+        </div>
+
+        <div class="inventory-display" id="inventoryDisplay">
+            <strong>Inventory:</strong>
+            <div id="inventoryItems"></div>
+        </div>
+
+        <!-- Sound Effects -->
+        <audio
+            id="buySound"
+            src="https://www.soundjay.com/button/sounds/button-16.mp3"
+        ></audio>
+        <audio
+            id="sellSound"
+            src="https://www.soundjay.com/button/sounds/button-09.mp3"
+        ></audio>
+        <audio
+            id="fireSound"
+            src="https://www.soundjay.com/button/sounds/button-3.mp3"
+        ></audio>
+        <audio
+            id="craftSound"
+            src="https://www.soundjay.com/mechanical/sounds/hammer-01.mp3"
+        ></audio>
+
+        <script src="script.js"></script>
+    </body>
 </html>

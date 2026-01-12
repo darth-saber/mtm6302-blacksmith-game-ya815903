@@ -1,94 +1,141 @@
-// Variables
 let gold = 10;
-let wood = 5;
-let ore = 3;
-let swordCount = 2;
-let axeCount = 3;
-let fireStatus = false;
-let price = 0
+let ore = 0;
+let wood = 0;
+let fireBurning = false;
+let weapons = [];
 
-// Functions
-function fire() {
-  if (fireStatus) {
-    fireStatus = false;
-    console.log('Fire is out');
-  } else if (wood > 0) {
-    fireStatus = true;
-    wood = wood - 1;
-    console.log('The fire is going');
-  } else {
-    console.log("You don't have any more wood");
+const logDiv = document.getElementById("log");
+const fireAnim = document.getElementById("fireAnim");
+const inventoryItems = document.getElementById("inventoryItems");
+
+const buySound = document.getElementById("buySound");
+const sellSound = document.getElementById("sellSound");
+const fireSound = document.getElementById("fireSound");
+const craftSound = document.getElementById("craftSound");
+
+const BUY_PRICES = { ore: 3, wood: 1 };
+const MAKE_RECIPES = { sword: { ore: 2, wood: 1 }, axe: { ore: 1, wood: 2 } };
+const SELL_PRICES = { sword: [5, 10], axe: [4, 8] };
+
+function log(message) {
+  logDiv.innerHTML += message + "<br>";
+  logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+function playSound(sound) {
+  sound.currentTime = 0;
+  sound.play();
+}
+
+function updateInventory() {
+  let html = `<p>Gold: ${gold} | Ore: ${ore} | Wood: ${wood} | Fire: ${fireBurning ? "🔥" : "❌"}</p>`;
+  html += weapons.length
+    ? weapons.map((w) => `<span class="weapon ${w}">${w}</span>`).join(" ")
+    : "No weapons";
+  inventoryItems.innerHTML = html;
+}
+
+function spawnSparks() {
+  for (let i = 0; i < 5; i++) {
+    const spark = document.createElement("div");
+    spark.className = "spark";
+    spark.style.left = Math.random() * 50 + "px";
+    spark.style.setProperty("--x", Math.random() * 20 - 10 + "px");
+    fireAnim.appendChild(spark);
+    setTimeout(() => spark.remove(), 500);
   }
 }
 
-function buy(item, cost, amount) {
-  if (gold === cost) {
-    gold + cost;
-    if (item === 'wood') {
-      wood += amount;
-    } else if (item === 'ore') {
-      ore += amount;
-    }
-    console.log(`You bought ${amount} ${item}`);
-  } else {
-    console.log(`You need ${cost + gold} more gold`);
+function buy(item) {
+  if (fireBurning) {
+    log("Cannot buy while fire is burning!");
+    return;
   }
-
+  if (!BUY_PRICES[item]) {
+    log("Invalid item to buy!");
+    return;
+  }
+  if (gold >= BUY_PRICES[item]) {
+    gold -= BUY_PRICES[item];
+    if (item === "ore") ore++;
+    else if (item === "wood") wood++;
+    log(`Bought 1 ${item}.`);
+    playSound(buySound);
+  } else log("Not enough gold!");
+  updateInventory();
 }
 
+function fireToggle() {
+  if (fireBurning) {
+    fireBurning = false;
+    fireAnim.style.display = "none";
+    log("Fire stopped.");
+  } else {
+    if (wood >= 1) {
+      wood--;
+      fireBurning = true;
+      fireAnim.style.display = "block";
+      log("Fire started.");
+      playSound(fireSound);
+      setInterval(() => {
+        if (fireBurning) spawnSparks();
+      }, 300);
+    } else log("Not enough wood to start fire!");
+  }
+  updateInventory();
+}
 
 function make(item) {
-  if (item ===  "sword") {
-    if (wood >= 2 && gold >= 4) {
-      wood -= 2;
-      gold -= 4;
-      swordCount++;
-      console.log('Sword made! You now have a sword');
-    } else {
-      console.log('Not enough resources to create a sword');
-    }
-  } else if (item === "axe") {
-    if (wood >= 3 && ore >= 2) {
-      wood -= 3;
-      ore -= 2;
-      axeCountCount++;
-      console.log('axe made! You now have a axe');
-      } else {
-        console.log('Not enough resources to create a axe');
-      }
+  if (!fireBurning) {
+    log("Fire must be burning to make weapons!");
+    return;
   }
+  if (!MAKE_RECIPES[item]) {
+    log("Invalid weapon!");
+    return;
+  }
+  const recipe = MAKE_RECIPES[item];
+  if (ore >= recipe.ore && wood >= recipe.wood) {
+    ore -= recipe.ore;
+    wood -= recipe.wood;
+    weapons.push(item);
+    log(`Made 1 ${item}.`);
+    playSound(craftSound);
+    spawnSparks();
+  } else log("Not enough resources!");
+  updateInventory();
 }
-  
+
 function sell(item) {
-  let price = 0;
-  if (item === 'sword') {
-    price = 4;
-    gold += price * swordCount;
-    swordCount = 0;
-  } else if (item === 'axe') {
-    price = 6;
-    gold += price * axeCount;
-    axeCount = 0;
+  if (fireBurning) {
+    log("Cannot sell while fire is burning!");
+    return;
   }
-  items[item]--;
-  inventory();
-  console.log(`You sold your ${item}, making ${gold - price} gold.`);
-
+  const index = weapons.indexOf(item);
+  if (index >= 0) {
+    weapons.splice(index, 1);
+    const [min, max] = SELL_PRICES[item];
+    const earned = Math.floor(Math.random() * (max - min + 1)) + min;
+    gold += earned;
+    log(`Sold 1 ${item} for ${earned} gold.`);
+    playSound(sellSound);
+  } else log(`No ${item} to sell!`);
+  updateInventory();
 }
 
-function inventory() {
-  console.log(`Sword Count: ${swordCount}`);
-  console.log(`Axe Count: ${axeCount}`);
-  console.log(`Fire Status: ${fireStatus}`);
-  console.log(`Gold: ${gold}`);
+function showInventory() {
+  updateInventory();
+}
+function showHelp() {
+  log(`Commands:
+Buy Ore/Wood
+Make Sword/Axe
+Sell Sword/Axe
+Toggle Fire
+Show Inventory
+Help`);
 }
 
-function help() {
-  console.log('Instructions for the game:');
-  console.log('- Use the "make" command to create items like swords and axes.');
-  console.log('- Use the "sell" command to sell items and earn gold.');
-  console.log('- Use the "inventory" command to check your current inventory.');
-  console.log('- Use the "help" command to display these instructions again.');
-}
-
-help(); // Example usage: display the instructions for the game
+// Initialize
+log("Welcome to Blacksmith! Use the buttons to play.");
+updateInventory();
