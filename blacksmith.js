@@ -8,23 +8,15 @@ const logDiv = document.getElementById("log");
 const fireAnim = document.getElementById("fireAnim");
 const inventoryItems = document.getElementById("inventoryItems");
 
-const buySound = document.getElementById("buySound");
-const sellSound = document.getElementById("sellSound");
-const fireSound = document.getElementById("fireSound");
-const craftSound = document.getElementById("craftSound");
-
 const BUY_PRICES = { ore: 3, wood: 1 };
 const MAKE_RECIPES = { sword: { ore: 2, wood: 1 }, axe: { ore: 1, wood: 2 } };
 const SELL_PRICES = { sword: [5, 10], axe: [4, 8] };
 
+let sparkInterval = null;
+
 function log(message) {
   logDiv.innerHTML += message + "<br>";
   logDiv.scrollTop = logDiv.scrollHeight;
-}
-
-function playSound(sound) {
-  sound.currentTime = 0;
-  sound.play();
 }
 
 function updateInventory() {
@@ -60,7 +52,6 @@ function buy(item) {
     if (item === "ore") ore++;
     else if (item === "wood") wood++;
     log(`Bought 1 ${item}.`);
-    playSound(buySound);
   } else log("Not enough gold!");
   updateInventory();
 }
@@ -70,16 +61,15 @@ function fireToggle() {
     fireBurning = false;
     fireAnim.style.display = "none";
     log("Fire stopped.");
+    clearInterval(sparkInterval);
+    sparkInterval = null;
   } else {
     if (wood >= 1) {
       wood--;
       fireBurning = true;
       fireAnim.style.display = "block";
       log("Fire started.");
-      playSound(fireSound);
-      setInterval(() => {
-        if (fireBurning) spawnSparks();
-      }, 300);
+      if (!sparkInterval) sparkInterval = setInterval(spawnSparks, 300);
     } else log("Not enough wood to start fire!");
   }
   updateInventory();
@@ -100,7 +90,6 @@ function make(item) {
     wood -= recipe.wood;
     weapons.push(item);
     log(`Made 1 ${item}.`);
-    playSound(craftSound);
     spawnSparks();
   } else log("Not enough resources!");
   updateInventory();
@@ -118,7 +107,6 @@ function sell(item) {
     const earned = Math.floor(Math.random() * (max - min + 1)) + min;
     gold += earned;
     log(`Sold 1 ${item} for ${earned} gold.`);
-    playSound(sellSound);
   } else log(`No ${item} to sell!`);
   updateInventory();
 }
