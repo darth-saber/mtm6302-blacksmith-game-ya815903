@@ -1,6 +1,4 @@
-# mtm6302-blacksmith-game-ya815903
-Gerry Adams-Gaumont 
-040820263 
+# mtm6302-blacksmith-game
 
 
 What is Blacksmith

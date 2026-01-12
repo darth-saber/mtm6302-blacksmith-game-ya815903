@@ -1,30 +1,18 @@
-// Game State
-let gold = 10;
-let ore = 0;
-let wood = 0;
-let fireBurning = false;
-let weapons = [];
-
-// DOM Elements
+let gold = 10,
+  ore = 0,
+  wood = 0,
+  fireBurning = false,
+  weapons = [];
 const logDiv = document.getElementById("log");
 const fireAnim = document.getElementById("fireAnim");
 const inventoryItems = document.getElementById("inventoryItems");
-
-// Prices & Recipes
-const BUY_PRICES = { ore: 3, wood: 1 };
-const MAKE_RECIPES = { sword: { ore: 2, wood: 1 }, axe: { ore: 1, wood: 2 } };
-const SELL_PRICES = { sword: [5, 10], axe: [4, 8] };
-
-// Interval for sparks
 let sparkInterval = null;
 
-// Logging
 function log(message) {
   logDiv.innerHTML += message + "<br>";
   logDiv.scrollTop = logDiv.scrollHeight;
 }
 
-// Inventory Display
 function updateInventory() {
   let html = `<p>Gold: ${gold} | Ore: ${ore} | Wood: ${wood} | Fire: ${fireBurning ? "🔥" : "❌"}</p>`;
   html += weapons.length
@@ -33,7 +21,6 @@ function updateInventory() {
   inventoryItems.innerHTML = html;
 }
 
-// Sparks
 function spawnSparks() {
   if (!fireBurning) return;
   for (let i = 0; i < 5; i++) {
@@ -46,15 +33,14 @@ function spawnSparks() {
   }
 }
 
-// Game Actions
 function buy(item) {
   if (fireBurning) {
     log("Cannot buy while fire is burning!");
     return;
   }
-  if (!BUY_PRICES[item]) return log("Invalid item!");
-  if (gold >= BUY_PRICES[item]) {
-    gold -= BUY_PRICES[item];
+  const price = item === "ore" ? 3 : 1;
+  if (gold >= price) {
+    gold -= price;
     item === "ore" ? ore++ : wood++;
     log(`Bought 1 ${item}.`);
   } else log("Not enough gold!");
@@ -85,13 +71,12 @@ function make(item) {
     log("Fire must be burning to make weapons!");
     return;
   }
-  if (!MAKE_RECIPES[item]) return log("Invalid weapon!");
-  const recipe = MAKE_RECIPES[item];
+  const recipe = item === "sword" ? { ore: 2, wood: 1 } : { ore: 1, wood: 2 };
   if (ore >= recipe.ore && wood >= recipe.wood) {
     ore -= recipe.ore;
     wood -= recipe.wood;
     weapons.push(item);
-    log(`Made 1 ${item}.`);
+    log(`Made 1 ${item}`);
     spawnSparks();
   } else log("Not enough resources!");
   updateInventory();
@@ -102,11 +87,14 @@ function sell(item) {
     log("Cannot sell while fire is burning!");
     return;
   }
-  const index = weapons.indexOf(item);
-  if (index >= 0) {
-    weapons.splice(index, 1);
-    const [min, max] = SELL_PRICES[item];
-    const earned = Math.floor(Math.random() * (max - min + 1)) + min;
+  const idx = weapons.indexOf(item);
+  if (idx >= 0) {
+    weapons.splice(idx, 1);
+    const earned =
+      Math.floor(
+        Math.random() *
+          ((item === "sword" ? 10 : 8) - (item === "sword" ? 5 : 4) + 1),
+      ) + (item === "sword" ? 5 : 4);
     gold += earned;
     log(`Sold 1 ${item} for ${earned} gold.`);
   } else log(`No ${item} to sell!`);
@@ -117,30 +105,21 @@ function showInventory() {
   updateInventory();
 }
 function showHelp() {
-  log(`Commands:
-Buy Ore/Wood
-Make Sword/Axe
-Sell Sword/Axe
-Toggle Fire
-Show Inventory
-Help`);
+  log(
+    "Commands: Buy Ore/Wood, Make Sword/Axe, Sell Sword/Axe, Toggle Fire, Show Inventory, Help",
+  );
 }
 
-// Bind buttons directly
-document.getElementById("buyOre").addEventListener("click", () => buy("ore"));
-document.getElementById("buyWood").addEventListener("click", () => buy("wood"));
-document.getElementById("toggleFire").addEventListener("click", fireToggle);
-document
-  .getElementById("makeSword")
-  .addEventListener("click", () => make("sword"));
-document.getElementById("makeAxe").addEventListener("click", () => make("axe"));
-document
-  .getElementById("sellSword")
-  .addEventListener("click", () => sell("sword"));
-document.getElementById("sellAxe").addEventListener("click", () => sell("axe"));
-document.getElementById("showInv").addEventListener("click", showInventory);
-document.getElementById("showHelp").addEventListener("click", showHelp);
+// Bind buttons
+document.getElementById("buyOre").onclick = () => buy("ore");
+document.getElementById("buyWood").onclick = () => buy("wood");
+document.getElementById("toggleFire").onclick = () => fireToggle();
+document.getElementById("makeSword").onclick = () => make("sword");
+document.getElementById("makeAxe").onclick = () => make("axe");
+document.getElementById("sellSword").onclick = () => sell("sword");
+document.getElementById("sellAxe").onclick = () => sell("axe");
+document.getElementById("showInv").onclick = () => showInventory();
+document.getElementById("showHelp").onclick = () => showHelp();
 
-// Initialize
 log("Welcome to Blacksmith! Use the buttons to play.");
 updateInventory();
