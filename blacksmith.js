@@ -126,18 +126,21 @@ Show Inventory
 Help`);
 }
 
-// Bind buttons after DOM load
-window.onload = () => {
-  document.getElementById("buyOre").onclick = () => buy("ore");
-  document.getElementById("buyWood").onclick = () => buy("wood");
-  document.getElementById("toggleFire").onclick = fireToggle;
-  document.getElementById("makeSword").onclick = () => make("sword");
-  document.getElementById("makeAxe").onclick = () => make("axe");
-  document.getElementById("sellSword").onclick = () => sell("sword");
-  document.getElementById("sellAxe").onclick = () => sell("axe");
-  document.getElementById("showInv").onclick = showInventory;
-  document.getElementById("showHelp").onclick = showHelp;
+// Bind buttons directly
+document.getElementById("buyOre").addEventListener("click", () => buy("ore"));
+document.getElementById("buyWood").addEventListener("click", () => buy("wood"));
+document.getElementById("toggleFire").addEventListener("click", fireToggle);
+document
+  .getElementById("makeSword")
+  .addEventListener("click", () => make("sword"));
+document.getElementById("makeAxe").addEventListener("click", () => make("axe"));
+document
+  .getElementById("sellSword")
+  .addEventListener("click", () => sell("sword"));
+document.getElementById("sellAxe").addEventListener("click", () => sell("axe"));
+document.getElementById("showInv").addEventListener("click", showInventory);
+document.getElementById("showHelp").addEventListener("click", showHelp);
 
-  log("Welcome to Blacksmith! Use the buttons to play.");
-  updateInventory();
-};
+// Initialize
+log("Welcome to Blacksmith! Use the buttons to play.");
+updateInventory();
