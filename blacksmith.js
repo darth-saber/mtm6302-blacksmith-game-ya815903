@@ -1,4 +1,4 @@
-let gold = 10,
+et gold = 10,
   ore = 0,
   wood = 0,
   fireBurning = false,
@@ -104,6 +104,7 @@ function sell(item) {
 function showInventory() {
   updateInventory();
 }
+
 function showHelp() {
   log(
     "Commands: Buy Ore/Wood, Make Sword/Axe, Sell Sword/Axe, Toggle Fire, Show Inventory, Help",

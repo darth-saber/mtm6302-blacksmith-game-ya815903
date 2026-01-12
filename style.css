@@ -5,12 +5,14 @@ body {
     padding: 20px;
     text-align: center;
 }
+
 h1 {
     color: #ffa500;
     text-shadow:
         0 0 10px #ff6a00,
         0 0 20px #ff4500;
 }
+
 #log {
     height: 200px;
     overflow-y: auto;
@@ -20,6 +22,7 @@ h1 {
     background: #222;
     border-radius: 8px;
 }
+
 button {
     padding: 8px 12px;
     margin: 5px;
@@ -30,10 +33,12 @@ button {
     cursor: pointer;
     font-weight: bold;
 }
+
 button:hover {
     background: #444;
     box-shadow: 0 0 10px #ffa500;
 }
+
 .fire {
     width: 50px;
     height: 80px;
@@ -50,6 +55,7 @@ button:hover {
     display: none;
     position: relative;
 }
+
 @keyframes flicker {
     0% {
         transform: scaleY(1) scaleX(1);
@@ -64,6 +70,7 @@ button:hover {
         opacity: 0.85;
     }
 }
+
 .inventory-display {
     background: #222;
     padding: 10px;
@@ -71,6 +78,7 @@ button:hover {
     border-radius: 8px;
     margin-top: 10px;
 }
+
 .weapon {
     display: inline-block;
     margin: 5px;
@@ -78,14 +86,17 @@ button:hover {
     border-radius: 6px;
     background: #444;
 }
+
 .sword {
     background: linear-gradient(45deg, #aaa, #fff);
     color: #000;
 }
+
 .axe {
     background: linear-gradient(45deg, #b5651d, #ffcc99);
     color: #000;
 }
+
 .spark {
     position: absolute;
     width: 5px;
@@ -95,6 +106,7 @@ button:hover {
     pointer-events: none;
     animation: rise 0.5s ease-out forwards;
 }
+
 @keyframes rise {
     0% {
         transform: translate(0, 0) scale(1);
